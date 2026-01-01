@@ -22,16 +22,62 @@ public class CoverImageService {
         BufferedImage image = ImageIO.read(is);
         Graphics2D g = image.createGraphics();
 
-        // Text styling
+        //Makes text much smoother
+        g.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+        );
+
+        // Load custom font
+        InputStream fontStream = getClass()
+                .getClassLoader()
+                .getResourceAsStream("fonts/Montserrat-Bold.ttf");
+
+        if (fontStream == null) {
+            throw new RuntimeException("Font file not found");
+        }
+
+        Font baseFont = Font.createFont(Font.TRUETYPE_FONT, fontStream);
+        Font nameFont = baseFont.deriveFont(Font.BOLD, 40f);
+        Font roleFont = baseFont.deriveFont(Font.PLAIN, 28f);
+        Font skillsFont = baseFont.deriveFont(Font.PLAIN, 22f);
+
+
+        // NAME (Centered, White)
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 40));
-        g.drawString(request.getName(), 100, 150);
+        //g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.setFont(nameFont);
 
-        g.setFont(new Font("Arial", Font.PLAIN, 28));
-        g.drawString(request.getRole(), 100, 200);
+        String nameText = request.getName();
+        FontMetrics nameFm = g.getFontMetrics();
+        int nameX = (image.getWidth() - nameFm.stringWidth(nameText)) / 2;
+        int nameY = 150;
 
-        g.setFont(new Font("Arial", Font.PLAIN, 22));
-        g.drawString(request.getSkills(), 100, 250);
+        g.drawString(nameText, nameX, nameY);
+
+        // ROLE (Centered, LinkedIn Blue)
+        g.setColor(new Color(30, 144, 255));
+        //g.setFont(new Font("Arial", Font.PLAIN, 28));
+        g.setFont(roleFont);
+
+        String roleText = request.getRole();
+        FontMetrics roleFm = g.getFontMetrics();
+        int roleX = (image.getWidth() - roleFm.stringWidth(roleText)) / 2;
+        int roleY = 200;
+
+        g.drawString(roleText, roleX, roleY);
+
+        // SKILLS (Centered, White)
+        g.setColor(Color.WHITE);
+        //g.setFont(new Font("Arial", Font.PLAIN, 22));
+        g.setFont(skillsFont);
+
+        String skillsText = request.getSkills();
+        FontMetrics skillsFm = g.getFontMetrics();
+        int skillsX = (image.getWidth() - skillsFm.stringWidth(skillsText)) / 2;
+        int skillsY = 250;
+
+        g.drawString(skillsText, skillsX, skillsY);
 
         g.dispose();
 
