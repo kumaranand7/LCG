@@ -17,7 +17,7 @@ public class CoverImageService {
         // Load base image
         InputStream is = getClass()
                 .getClassLoader()
-                .getResourceAsStream("templates/img2.png");
+                .getResourceAsStream("templates/cover.png");
 
         BufferedImage image = ImageIO.read(is);
         Graphics2D g = image.createGraphics();
@@ -43,8 +43,8 @@ public class CoverImageService {
         Font skillsFont = baseFont.deriveFont(Font.PLAIN, 22f);
 
 
-        // NAME (Centered, White)
-        g.setColor(Color.WHITE);
+        // NAME
+        g.setColor(Color.BLACK);
         //g.setFont(new Font("Arial", Font.BOLD, 40));
         g.setFont(nameFont);
 
@@ -55,20 +55,49 @@ public class CoverImageService {
 
         g.drawString(nameText, nameX, nameY);
 
-        // ROLE (Centered, LinkedIn Blue)
-        g.setColor(new Color(30, 144, 255));
-        //g.setFont(new Font("Arial", Font.PLAIN, 28));
+        // ROLE
+//        g.setColor(new Color(3, 152, 158));
+//
+//        //g.setFont(new Font("Arial", Font.PLAIN, 28));
+//        g.setFont(roleFont);
+//
+//        String roleText = request.getRole();
+//        FontMetrics roleFm = g.getFontMetrics();
+//        int roleX = (image.getWidth() - roleFm.stringWidth(roleText)) / 2;
+//        int roleY = 200;
+//
+//        g.drawString(roleText, roleX, roleY);
         g.setFont(roleFont);
 
         String roleText = request.getRole();
         FontMetrics roleFm = g.getFontMetrics();
-        int roleX = (image.getWidth() - roleFm.stringWidth(roleText)) / 2;
-        int roleY = 200;
 
-        g.drawString(roleText, roleX, roleY);
+        int textWidth = roleFm.stringWidth(roleText);
+        int textHeight = roleFm.getHeight();
 
-        // SKILLS (Centered, White)
+        int paddingX = 20;
+        int paddingY = 10;
+
+        int rectX = (image.getWidth() - textWidth) / 2 - paddingX;
+        int rectY = 200 - textHeight + paddingY;
+
+        int rectWidth = textWidth + paddingX * 2;
+        int rectHeight = textHeight + paddingY;
+
+        int arc = rectHeight;
+
+        g.setColor(Color.decode("#ff5757"));
+        g.fillRoundRect(rectX, rectY, rectWidth, rectHeight, arc, arc);
+
         g.setColor(Color.WHITE);
+        int textX = (image.getWidth() - textWidth) / 2;
+        int textY = 200;
+
+        g.drawString(roleText, textX, textY);
+
+
+        // SKILLS
+        g.setColor(Color.BLACK);
         //g.setFont(new Font("Arial", Font.PLAIN, 22));
         g.setFont(skillsFont);
 
