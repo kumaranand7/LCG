@@ -14,10 +14,17 @@ public class CoverImageService {
 
     public String generateCover(CoverRequest request) throws Exception {
 
-        // Load base image
+        //  image
+
+        String templatePath = "templates/template" + request.getTemplateId() + ".png";
+
         InputStream is = getClass()
                 .getClassLoader()
-                .getResourceAsStream("templates/cover.png");
+                .getResourceAsStream(templatePath);
+
+        if (is == null) {
+            throw new RuntimeException("Template not found: " + templatePath);
+        }
 
         BufferedImage image = ImageIO.read(is);
         Graphics2D g = image.createGraphics();
@@ -56,45 +63,42 @@ public class CoverImageService {
         g.drawString(nameText, nameX, nameY);
 
         // ROLE
-//        g.setColor(new Color(3, 152, 158));
-//
-//        //g.setFont(new Font("Arial", Font.PLAIN, 28));
-//        g.setFont(roleFont);
-//
-//        String roleText = request.getRole();
-//        FontMetrics roleFm = g.getFontMetrics();
-//        int roleX = (image.getWidth() - roleFm.stringWidth(roleText)) / 2;
-//        int roleY = 200;
-//
-//        g.drawString(roleText, roleX, roleY);
         g.setFont(roleFont);
 
         String roleText = request.getRole();
-        FontMetrics roleFm = g.getFontMetrics();
+        FontMetrics fm = g.getFontMetrics();
 
-        int textWidth = roleFm.stringWidth(roleText);
-        int textHeight = roleFm.getHeight();
+        int textWidth = fm.stringWidth(roleText);
+        int textHeight = fm.getHeight();
+        int ascent = fm.getAscent();
 
-        int paddingX = 20;
-        int paddingY = 10;
+        // Padding
+        int paddingX = 30;
+        int paddingY = 12;
 
+        // Center X
         int rectX = (image.getWidth() - textWidth) / 2 - paddingX;
-        int rectY = 200 - textHeight + paddingY;
+
+        // Pill Y position (you can tweak this)
+        int rectY = 160;
 
         int rectWidth = textWidth + paddingX * 2;
-        int rectHeight = textHeight + paddingY;
+        int rectHeight = textHeight + paddingY * 2;
 
+        // Rounded pill
         int arc = rectHeight;
 
+        // Draw pill background
         g.setColor(Color.decode("#ff5757"));
         g.fillRoundRect(rectX, rectY, rectWidth, rectHeight, arc, arc);
 
+        // Draw centered text inside pill
         g.setColor(Color.WHITE);
+
         int textX = (image.getWidth() - textWidth) / 2;
-        int textY = 200;
+        int textY = rectY + paddingY + ascent;
 
         g.drawString(roleText, textX, textY);
-
 
         // SKILLS
         g.setColor(Color.BLACK);
@@ -111,13 +115,13 @@ public class CoverImageService {
         g.dispose();
 
         // Save image
-        File outputDir = new File("generated");
+        File outputDir = new File("src/main/resources/static/generated");
         if (!outputDir.exists()) outputDir.mkdirs();
 
         String fileName = "cover_" + System.currentTimeMillis() + ".png";
         File outputFile = new File(outputDir, fileName);
         ImageIO.write(image, "png", outputFile);
 
-        return outputFile.getAbsolutePath();
+        return fileName;
     }
 }

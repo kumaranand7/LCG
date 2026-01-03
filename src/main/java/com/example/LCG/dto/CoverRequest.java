@@ -7,6 +7,7 @@ public class CoverRequest {
     private String name;
     private String role;
     private String skills;
+    private int templateId;
 
     public String getName() {
         return name;
@@ -18,5 +19,9 @@ public class CoverRequest {
 
     public String getSkills() {
         return skills;
+    }
+
+    public int getTemplateId(){
+        return templateId;
     }
 }

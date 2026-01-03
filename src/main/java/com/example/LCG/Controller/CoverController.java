@@ -1,5 +1,5 @@
 package com.example.LCG.Controller;
-
+import com.example.LCG.dto.CoverResponse;
 import com.example.LCG.dto.CoverRequest;
 import com.example.LCG.Service.CoverImageService;
 import org.springframework.core.io.FileSystemResource;
@@ -23,17 +23,14 @@ public class CoverController {
     }
 
     @PostMapping("/generate")
-    public ResponseEntity<Resource> generateCover(@RequestBody CoverRequest request) throws Exception {
+    public ResponseEntity<CoverResponse> generateCover(
+            @RequestBody CoverRequest request) throws Exception {
 
-        String imagePath = service.generateCover(request);
-        File file = new File(imagePath);
+        String fileName = service.generateCover(request);
+        String imageUrl = "/generated/" + fileName;
 
-        Resource resource = new FileSystemResource(file);
+        return ResponseEntity.ok(new CoverResponse(imageUrl));
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_PNG)
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + file.getName() + "\"")
-                .body(resource);
     }
+
 }
