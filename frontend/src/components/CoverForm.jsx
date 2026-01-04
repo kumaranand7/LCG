@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { SKILLS } from "../data/skillsData";
+import TemplateSelector from "./TemplateSelector";
+
 
 export default function CoverForm({ onGenerate, loading }) {
   const [form, setForm] = useState({
@@ -168,16 +170,13 @@ export default function CoverForm({ onGenerate, loading }) {
         ))}
       </div>
 
-      <select
-        name="templateId"
-        value={form.templateId}
-        onChange={handleChange}
-      >
-        <option value={1}>Template 1</option>
-        <option value={2}>Template 2</option>
-        <option value={3}>Template 3</option>
-      </select>
-
+      <TemplateSelector
+    selected={form.templateId}
+    onSelect={(id) =>
+      setForm({ ...form, templateId: id })
+    }
+  />
+  
       <button disabled={loading}>
         {loading ? "Generating..." : "Generate Cover"}
       </button>
