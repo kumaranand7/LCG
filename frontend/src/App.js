@@ -4,12 +4,13 @@ import CoverPreview from "./components/CoverPreview";
 import "./App.css";
 
 function App() {
-  const [imageUrl, setImageUrl] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState(1);
+  const [generatedImage, setGeneratedImage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const generateCover = async (data) => {
     setLoading(true);
-    setImageUrl("");
+    setGeneratedImage("");
 
     const res = await fetch("http://localhost:8081/api/covers/generate", {
       method: "POST",
@@ -18,25 +19,32 @@ function App() {
     });
 
     const result = await res.json();
-    setImageUrl("http://localhost:8081" + result.imageUrl);
+    setGeneratedImage("http://localhost:8081" + result.imageUrl);
     setLoading(false);
   };
 
   return (
     <div className="container">
+      {/* ✅ HEADER ALWAYS VISIBLE */}
       <div className="header">
         <h1>LinkedIn Cover Generator</h1>
         <p>Generate professional LinkedIn banners instantly</p>
       </div>
 
+      {/* MAIN CONTENT */}
       <div className="main">
-        <div className="form">
-          <CoverForm onGenerate={generateCover} loading={loading} />
-        </div>
+        <CoverForm
+          selectedTemplate={selectedTemplate}
+          onTemplateChange={setSelectedTemplate}
+          onGenerate={generateCover}
+          loading={loading}
+        />
 
-        <div className="preview">
-          <CoverPreview imageUrl={imageUrl} loading={loading} />
-        </div>
+        <CoverPreview
+          selectedTemplate={selectedTemplate}
+          generatedImage={generatedImage}
+          loading={loading}
+        />
       </div>
     </div>
   );
