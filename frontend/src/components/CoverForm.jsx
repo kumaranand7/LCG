@@ -7,12 +7,14 @@ export default function CoverForm({ onGenerate, loading }) {
   const [form, setForm] = useState({
     name: "",
     role: "",
-    skills: [],       // 👈 skills as array
+    skills: [],       //  skills as array
     templateId: 1,
   });
 
   const [skillInput, setSkillInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(-1);
+
 
   // Handle normal inputs
   const handleChange = (e) => {
@@ -56,12 +58,39 @@ export default function CoverForm({ onGenerate, loading }) {
   };
 
   // Enter key to add custom skill
-  const handleSkillKeyDown = (e) => {
-    if (e.key === "Enter" && skillInput.trim()) {
-      e.preventDefault();
+ const handleSkillKeyDown = (e) => {
+  // ENTER
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    // If suggestion selected → add that
+    if (activeIndex >= 0 && suggestions[activeIndex]) {
+      addSkill(suggestions[activeIndex]);
+      setActiveIndex(-1);
+      return;
+    }
+
+    // Else add typed skill
+    if (skillInput.trim()) {
       addSkill(skillInput.trim());
     }
-  };
+  }
+
+  // ARROW DOWN
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    setActiveIndex((prev) =>
+      prev < suggestions.length - 1 ? prev + 1 : prev
+    );
+  }
+
+  // ARROW UP
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    setActiveIndex((prev) => (prev > 0 ? prev - 1 : -1));
+  }
+};
+
 
   // Remove skill
   const removeSkill = (skillToRemove) => {
@@ -77,7 +106,7 @@ export default function CoverForm({ onGenerate, loading }) {
 
     const payload = {
       ...form,
-      skills: form.skills.join(" | "), // backend-friendly
+      skills: form.skills.join(" | "), 
     };
 
     onGenerate(payload);
@@ -99,7 +128,7 @@ export default function CoverForm({ onGenerate, loading }) {
         onChange={handleChange}
       />
 
-      {/* 🔥 Skill input with suggestions */}
+      {/*  Skill input with suggestions */}
       <div style={{ position: "relative" }}>
         <input
           placeholder="Type a skill and press Enter"
@@ -124,18 +153,21 @@ export default function CoverForm({ onGenerate, loading }) {
               overflowY: "auto",
             }}
           >
-            {suggestions.map((skill) => (
-              <li
-                key={skill}
-                onClick={() => addSkill(skill)}
-                style={{
-                  padding: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                {skill}
-              </li>
-            ))}
+          {suggestions.map((skill, index) => (
+            <li
+              key={skill}
+              onClick={() => addSkill(skill)}
+              style={{
+                padding: "8px",
+                cursor: "pointer",
+                background:
+                  index === activeIndex ? "#e6f7f8" : "white",
+              }}
+            >
+              {skill}
+            </li>
+          ))}
+
           </ul>
         )}
       </div>
@@ -170,13 +202,12 @@ export default function CoverForm({ onGenerate, loading }) {
         ))}
       </div>
 
-      <TemplateSelector
-    selected={form.templateId}
-    onSelect={(id) =>
-      setForm({ ...form, templateId: id })
-    }
-  />
-  
+     <TemplateSelector
+      selected={form.templateId}
+      onSelect={(id) =>
+        setForm({ ...form, templateId: id })
+      }
+    />
       <button disabled={loading}>
         {loading ? "Generating..." : "Generate Cover"}
       </button>
