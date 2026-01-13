@@ -12,7 +12,10 @@ function App() {
     setLoading(true);
     setGeneratedImage("");
 
-    const res = await fetch("http://localhost:8081/api/covers/generate", {
+    const API_BASE = process.env.REACT_APP_API_BASE;
+
+    // const res = await fetch("http://localhost:8081/api/covers/generate", {
+      const res = await fetch(`${API_BASE}/api/covers/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -25,7 +28,7 @@ function App() {
 
   return (
     <div className="container">
-      {/* ✅ HEADER ALWAYS VISIBLE */}
+      {/*  HEADER ALWAYS VISIBLE */}
       <div className="header">
         <h1>LinkedIn Cover Generator</h1>
         <p>Generate professional LinkedIn banners instantly</p>
