@@ -115,13 +115,32 @@ public class CoverImageService {
         g.dispose();
 
         // Save image
-        File outputDir = new File("D:/linkedin-cover-generator/backend/LCG/uploads/generated");
+//        File outputDir = new File("D:/linkedin-cover-generator/backend/LCG/uploads/generated");
+//        if (!outputDir.exists()) outputDir.mkdirs();
+//
+//        String fileName = "cover_" + System.currentTimeMillis() + ".png";
+//        File outputFile = new File(outputDir, fileName);
+//        ImageIO.write(image, "png", outputFile);
+//
+//        return fileName;
+
+
+
+        // Save image (Docker / Render safe)
+        File outputDir = new File("uploads/generated");
         if (!outputDir.exists()) outputDir.mkdirs();
 
         String fileName = "cover_" + System.currentTimeMillis() + ".png";
         File outputFile = new File(outputDir, fileName);
+
         ImageIO.write(image, "png", outputFile);
 
+        // DEBUG (VERY IMPORTANT – TEMP)
+        System.out.println("IMAGE SAVED AT: " + outputFile.getAbsolutePath());
+
         return fileName;
+
+
+
     }
 }
