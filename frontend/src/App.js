@@ -22,7 +22,8 @@ function App() {
     });
 
     const result = await res.json();
-    setGeneratedImage("http://localhost:8081" + result.imageUrl);
+    // setGeneratedImage("http://localhost:8081" + result.imageUrl);
+    setGeneratedImage(API_BASE  + result.imageUrl);
     setLoading(false);
   };
 
