@@ -37,13 +37,17 @@ public class CoverController {
 
     }
 
-    @GetMapping("/image/{fileName}")
+    @GetMapping("/image/{fileName:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String fileName) {
         try {
-            Path filePath = Paths.get("uploads/generated").resolve(fileName);
+            Path filePath = Paths.get("uploads/generated")
+                    .resolve(fileName)
+                    .normalize();
+
             Resource resource = new UrlResource(filePath.toUri());
 
             if (!resource.exists()) {
+                System.out.println("Image not found at: " + filePath.toAbsolutePath());
                 return ResponseEntity.notFound().build();
             }
 
@@ -52,9 +56,11 @@ public class CoverController {
                     .body(resource);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
+
 
 
 }
