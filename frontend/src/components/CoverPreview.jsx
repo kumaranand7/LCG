@@ -15,7 +15,7 @@ export default function CoverPreview({
     <div className="preview">
       <h3>Preview</h3>
 
-      {/* 🔥 If generated image exists → show it */}
+      {/*  If generated image exists → show it */}
       {generatedImage ? (
         <>
           <img src={generatedImage} alt="Generated Cover" />
@@ -25,7 +25,7 @@ export default function CoverPreview({
           </a>
         </>
       ) : (
-        /* 🔥 Else show selected template preview */
+        /*  Else show selected template preview */
         <>
           <img src={template.thumbnail} alt={template.name} />
           <p style={{ marginTop: "10px", color: "#666" }}>
