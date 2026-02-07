@@ -1,0 +1,90 @@
+import TemplateSelector from "./TemplateSelector";
+import SkillInput from "./SkillInput";
+import SkillTags from "./SkillTags";
+import { useSkills } from "../hooks/useSkills";
+
+export default function CoverForm({
+  form,
+  setForm,
+  styleConfig,
+  onGenerate,
+  loading,
+}) {
+  const {
+    skills,
+    skillInput,
+    suggestions,
+    activeIndex,
+    handleSkillChange,
+    handleKeyDown,
+    addSkill,
+    removeSkill,
+  } = useSkills([]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: name === "templateId" ? Number(value) : value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    setForm((prev) => ({
+      ...prev,
+      skills: skills.join(" | "),
+    }));
+
+    onGenerate({
+      ...form,
+      skills: skills.join(" | "),
+      style: styleConfig, // 👈 send exactly this
+    });
+  };
+
+  return (
+    // <div className="controls-panel">
+    <form className="section-card" onSubmit={handleSubmit}>
+      <h2 className="section-title"></h2>
+      <input
+        name="name"
+        placeholder="Your Name"
+        value={form.name}
+        onChange={handleChange}
+      />
+
+      <input
+        name="role"
+        placeholder="Your Role"
+        value={form.role}
+        onChange={handleChange}
+      />
+
+      <SkillInput
+        value={skillInput}
+        suggestions={suggestions}
+        activeIndex={activeIndex}
+        onChange={handleSkillChange}
+        onKeyDown={handleKeyDown}
+        onSelect={addSkill}
+      />
+
+      <SkillTags skills={skills} onRemove={removeSkill} />
+
+      <TemplateSelector
+        className="tab-content"
+        selected={form.templateId}
+        onSelect={(id) =>
+          setForm({ ...form, templateId: id })
+        }
+      />
+
+      <button disabled={loading}>
+        {loading ? "Generating..." : "Generate Cover"}
+      </button>
+    </form>
+    // </div>
+  );
+}
