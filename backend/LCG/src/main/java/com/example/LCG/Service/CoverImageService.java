@@ -3,6 +3,7 @@ package com.example.LCG.Service;
 import com.example.LCG.dto.CoverRequest;
 import com.example.LCG.dto.StyleConfig;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,8 +15,11 @@ public class CoverImageService {
 
     public String generateCover(CoverRequest request) throws Exception {
 
-        BufferedImage image =
-                ImageIO.read(new File(getTemplatePath(request.getTemplateId())));
+        String templatePath = getTemplatePath(request.getTemplateId());
+
+        BufferedImage image = ImageIO.read(
+                new ClassPathResource(templatePath).getInputStream()
+        );
 
         Graphics2D g = image.createGraphics();
         g.setRenderingHint(
@@ -64,7 +68,11 @@ public class CoverImageService {
         g.dispose();
 
         String fileName = "cover_" + System.currentTimeMillis() + ".png";
-        File output = new File("uploads/generated/" + fileName);
+        File dir = new File("uploads/generated");
+        if (!dir.exists()) dir.mkdirs();
+
+        File output = new File(dir, fileName);
+
         ImageIO.write(image, "png", output);
 
         return fileName;

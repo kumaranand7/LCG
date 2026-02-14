@@ -32,15 +32,18 @@ export default function CoverForm({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    setForm((prev) => ({
-      ...prev,
-      skills: skills.join(" | "),
-    }));
-
-    onGenerate({
+    const updatedForm = {
       ...form,
       skills: skills.join(" | "),
-      style: styleConfig, // 👈 send exactly this
+    };
+
+    // update parent form state (important)
+    setForm(updatedForm);
+
+    // send to backend
+    onGenerate({
+      ...updatedForm,
+      style: styleConfig,
     });
   };
 
