@@ -17,10 +17,10 @@ function App() {
   const [styleConfig, setStyleConfig] = useState({
     textAlign: "center",
 
-    backgroundType: "solid", // ✅ ADD
-    backgroundColor: "#ffffff", // ✅ ADD
-    gradientColor: "#eeeeee", // ✅ ADD
-    textColor: "#000000", // ✅ ADD (used in overlayStyle)
+    backgroundType: "solid",
+    backgroundColor: "#ffffff",
+    gradientColor: "#eeeeee",
+    textColor: "#000000",
 
     name: {
       color: "#000000",
@@ -39,28 +39,27 @@ function App() {
     },
   });
 
+  const generateCover = async (payload) => {
+    try {
+      setLoading(true);
+      setGeneratedImage("");
 
-  const generateCover = async () => {
-    setLoading(true);
-    setGeneratedImage("");
+      const res = await fetch("http://localhost:8081/api/covers/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const API_BASE = process.env.REACT_APP_API_BASE;
+      if (!res.ok) throw new Error("Failed to generate cover");
 
-    const payload = {
-      ...form,
-      styleConfig,
-    };
+      const result = await res.json();
+      setGeneratedImage("http://localhost:8081" + result.imageUrl);
 
-    const res = await fetch("http://localhost:8081/api/covers/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const result = await res.json();
-    setGeneratedImage("http://localhost:8081" + result.imageUrl);
-
-    setLoading(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -89,10 +88,6 @@ function App() {
           loading={loading}
         />
       </div>
-
-      <div className="main-content">
-
-        </div>
     </div>
   );
 }

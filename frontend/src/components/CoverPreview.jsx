@@ -92,15 +92,13 @@ export default function CoverPreview({
         </div>
       </div>
 
-      {generatedImage && ( <a href={generatedImage} download> 
-        <button className="download-button">Download</button> 
-        </a> 
-      )}
-      {/* {generatedImage && (
+      {generatedImage && (
+        <div>
          <button className="download-button" onClick={handleDownload}>
            Download
          </button>
-      )} */}
+        </div>
+      )}
 
       <StyleControls
         styleConfig={styleConfig}
