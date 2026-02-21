@@ -50,7 +50,7 @@ export default function CoverForm({
   return (
     // <div className="controls-panel">
     <form className="section-card" onSubmit={handleSubmit}>
-      <h2 className="section-title"></h2>
+      <h2 className="section-title">Create Your Cover</h2>
       <input
         name="name"
         placeholder="Your Name"
