@@ -14,10 +14,10 @@ export default function CoverPreview({
 
   if (loading) return <p>Generating cover...</p>;
 
-  const overlayStyle = {
-    color: styleConfig.textColor,
-    textAlign: styleConfig.textAlign,
-  };
+  // const overlayStyle = {
+  //   color: styleConfig.textColor,
+  //   textAlign: styleConfig.textAlign,
+  // };
 
   const backgroundStyle =
   styleConfig.backgroundType === "gradient"
