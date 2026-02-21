@@ -1,16 +1,14 @@
 package com.example.LCG.Controller;
-import com.example.LCG.dto.CoverResponse;
-import com.example.LCG.dto.CoverRequest;
+
 import com.example.LCG.Service.CoverImageService;
-import org.springframework.core.io.FileSystemResource;
+import com.example.LCG.dto.CoverRequest;
+import com.example.LCG.dto.CoverResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -30,11 +28,9 @@ public class CoverController {
             @RequestBody CoverRequest request) throws Exception {
 
         String fileName = service.generateCover(request);
-//        String imageUrl = "/generated/" + fileName;
         String imageUrl = "/api/covers/image/" + fileName;
 
         return ResponseEntity.ok(new CoverResponse(imageUrl));
-
     }
 
     @GetMapping("/image/{fileName:.+}")
@@ -47,7 +43,6 @@ public class CoverController {
             Resource resource = new UrlResource(filePath.toUri());
 
             if (!resource.exists()) {
-                System.out.println("Image not found at: " + filePath.toAbsolutePath());
                 return ResponseEntity.notFound().build();
             }
 
@@ -56,11 +51,7 @@ public class CoverController {
                     .body(resource);
 
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
-
-
-
 }
