@@ -44,7 +44,10 @@ function App() {
       setLoading(true);
       setGeneratedImage("");
 
-      const res = await fetch("http://localhost:8081/api/covers/generate", {
+      //const res = await fetch("http://localhost:8081/api/covers/generate", {
+      const API_BASE = process.env.REACT_APP_API_BASE;
+
+      const res = await fetch(`${API_BASE}/api/covers/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -53,7 +56,8 @@ function App() {
       if (!res.ok) throw new Error("Failed to generate cover");
 
       const result = await res.json();
-      setGeneratedImage("http://localhost:8081" + result.imageUrl);
+      //setGeneratedImage("http://localhost:8081" + result.imageUrl);
+      setGeneratedImage(`${API_BASE}${result.imageUrl}`);
 
     } catch (err) {
       console.error(err);
