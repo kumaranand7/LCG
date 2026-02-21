@@ -1,146 +1,131 @@
 package com.example.LCG.Service;
 
 import com.example.LCG.dto.CoverRequest;
+import com.example.LCG.dto.StyleConfig;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.InputStream;
 
 @Service
 public class CoverImageService {
 
     public String generateCover(CoverRequest request) throws Exception {
 
-        //  image
+        String templatePath = getTemplatePath(request.getTemplateId());
 
-        String templatePath = "templates/template" + request.getTemplateId() + ".png";
-
-        InputStream is = getClass()
-                .getClassLoader()
-                .getResourceAsStream(templatePath);
-
-        if (is == null) {
-            throw new RuntimeException("Template not found: " + templatePath);
-        }
-
-        BufferedImage image = ImageIO.read(is);
-        Graphics2D g = image.createGraphics();
-
-        //Makes text much smoother
-        g.setRenderingHint(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+        BufferedImage image = ImageIO.read(
+                new ClassPathResource(templatePath).getInputStream()
         );
 
-        // Load custom font
-        InputStream fontStream = getClass()
-                .getClassLoader()
-                .getResourceAsStream("fonts/Montserrat-Bold.ttf");
+        Graphics2D g = image.createGraphics();
+        g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+        );
 
-        if (fontStream == null) {
-            throw new RuntimeException("Font file not found");
-        }
+        int width = image.getWidth();
+        int height = image.getHeight();
 
-        Font baseFont = Font.createFont(Font.TRUETYPE_FONT, fontStream);
-        Font nameFont = baseFont.deriveFont(Font.BOLD, 40f);
-        Font roleFont = baseFont.deriveFont(Font.PLAIN, 28f);
-        Font skillsFont = baseFont.deriveFont(Font.PLAIN, 22f);
+        StyleConfig style = request.getStyle();
 
+        // ================= NAME =================
+        g.setColor(Color.decode(style.getName().getColor()));
+        g.setFont(new Font(
+                "SansSerif",
+                Font.BOLD,
+                style.getName().getFontSize()
+        ));
+        drawCenteredText(
+                g,
+                request.getName(),
+                width,
+                height / 2 - 40
+        );
 
-        // NAME
-        g.setColor(Color.BLACK);
-        //g.setFont(new Font("Arial", Font.BOLD, 40));
-        g.setFont(nameFont);
+        // ================= ROLE BADGE =================
+        drawCenteredBadge(
+                g,
+                request.getRole(),
+                width,
+                height / 2,
+                style.getRole()
+        );
 
-        String nameText = request.getName();
-        FontMetrics nameFm = g.getFontMetrics();
-        int nameX = (image.getWidth() - nameFm.stringWidth(nameText)) / 2;
-        int nameY = 150;
-
-        g.drawString(nameText, nameX, nameY);
-
-        // ROLE
-        g.setFont(roleFont);
-
-        String roleText = request.getRole();
-        FontMetrics fm = g.getFontMetrics();
-
-        int textWidth = fm.stringWidth(roleText);
-        int textHeight = fm.getHeight();
-        int ascent = fm.getAscent();
-
-        // Padding
-        int paddingX = 30;
-        int paddingY = 12;
-
-        // Center X
-        int rectX = (image.getWidth() - textWidth) / 2 - paddingX;
-
-        // Pill Y position (you can tweak this)
-        int rectY = 160;
-
-        int rectWidth = textWidth + paddingX * 2;
-        int rectHeight = textHeight + paddingY * 2;
-
-        // Rounded pill
-        int arc = rectHeight;
-
-        // Draw pill background
-        g.setColor(Color.decode("#ff5757"));
-        g.fillRoundRect(rectX, rectY, rectWidth, rectHeight, arc, arc);
-
-        // Draw centered text inside pill
-        g.setColor(Color.WHITE);
-
-        int textX = (image.getWidth() - textWidth) / 2;
-        int textY = rectY + paddingY + ascent;
-
-        g.drawString(roleText, textX, textY);
-
-        // SKILLS
-        g.setColor(Color.BLACK);
-        //g.setFont(new Font("Arial", Font.PLAIN, 22));
-        g.setFont(skillsFont);
-
-        String skillsText = request.getSkills();
-        FontMetrics skillsFm = g.getFontMetrics();
-        int skillsX = (image.getWidth() - skillsFm.stringWidth(skillsText)) / 2;
-        int skillsY = 250;
-
-        g.drawString(skillsText, skillsX, skillsY);
+        // ================= SKILLS =================
+        g.setColor(Color.decode(style.getSkills().getColor()));
+        g.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        drawCenteredText(
+                g,
+                request.getSkills(),
+                width,
+                height / 2 + 50
+        );
 
         g.dispose();
 
-        // Save image
-//        File outputDir = new File("D:/linkedin-cover-generator/backend/LCG/uploads/generated");
-//        if (!outputDir.exists()) outputDir.mkdirs();
-//
-//        String fileName = "cover_" + System.currentTimeMillis() + ".png";
-//        File outputFile = new File(outputDir, fileName);
-//        ImageIO.write(image, "png", outputFile);
-//
-//        return fileName;
-
-
-
-        // Save image (Docker / Render safe)
-        File outputDir = new File("uploads/generated");
-        if (!outputDir.exists()) outputDir.mkdirs();
-
         String fileName = "cover_" + System.currentTimeMillis() + ".png";
-        File outputFile = new File(outputDir, fileName);
+        File dir = new File("uploads/generated");
+        if (!dir.exists()) dir.mkdirs();
 
-        ImageIO.write(image, "png", outputFile);
+        File output = new File(dir, fileName);
 
-        // DEBUG (VERY IMPORTANT – TEMP)
-        System.out.println("IMAGE SAVED AT: " + outputFile.getAbsolutePath());
+        ImageIO.write(image, "png", output);
 
         return fileName;
+    }
 
+    // ================= HELPERS =================
 
+    private String getTemplatePath(int templateId) {
+        return switch (templateId) {
+            case 1 -> "templates/template1.png";
+            case 2 -> "templates/template2.png";
+            case 3 -> "templates/template3.png";
+            default -> "templates/template1.png";
+        };
+    }
 
+    private void drawCenteredText(Graphics2D g, String text, int width, int y) {
+        FontMetrics fm = g.getFontMetrics();
+        int x = (width - fm.stringWidth(text)) / 2;
+        g.drawString(text, x, y);
+    }
+
+    private void drawCenteredBadge(
+            Graphics2D g,
+            String text,
+            int width,
+            int y,
+            StyleConfig.TextStyle roleStyle
+    ) {
+        g.setFont(new Font(
+                "SansSerif",
+                Font.BOLD,
+                roleStyle.getFontSize()
+        ));
+        FontMetrics fm = g.getFontMetrics();
+
+        int textWidth = fm.stringWidth(text);
+        int textHeight = fm.getHeight();
+        int x = (width - textWidth) / 2;
+
+        // Background pill
+        g.setColor(Color.decode(roleStyle.getBackgroundColor()));
+        g.fillRoundRect(
+                x - 20,
+                y - textHeight + 8,
+                textWidth + 40,
+                textHeight,
+                30,
+                30
+        );
+
+        // Text
+        g.setColor(Color.decode(roleStyle.getColor()));
+        g.drawString(text, x, y);
     }
 }

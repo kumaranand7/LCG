@@ -3,12 +3,14 @@ import { TEMPLATES } from "../data/templates";
 
 export default function TemplateSelector({ selected, onSelect }) {
   return (
-    <div style={{ marginBottom: "20px" }}>
-      <h4>Select Template</h4>
+    <div className="section-card" style={{ marginBottom: "20px" }}>
+      <h4 className="subsection-title">Select Template</h4>
 
-      <div style={{ display: "flex", gap: "15px" }}>
+      <div className="templates-grid" style={{ display: "flex", gap: "15px" }}>
         {TEMPLATES.map((tpl) => (
           <div
+
+            className="template-preview"
             key={tpl.id}
             onClick={() => onSelect(tpl.id)}
             style={{

@@ -4,49 +4,87 @@ import CoverPreview from "./components/CoverPreview";
 import "./App.css";
 
 function App() {
-  const [selectedTemplate, setSelectedTemplate] = useState(1);
   const [generatedImage, setGeneratedImage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const generateCover = async (data) => {
-    setLoading(true);
-    setGeneratedImage("");
+  const [form, setForm] = useState({
+    name: "",
+    role: "",
+    skills: "",
+    templateId: 1,
+  });
 
-    const API_BASE = process.env.REACT_APP_API_BASE;
+  const [styleConfig, setStyleConfig] = useState({
+    textAlign: "center",
 
-    // const res = await fetch("http://localhost:8081/api/covers/generate", {
-      const res = await fetch(`${API_BASE}/api/covers/generate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    backgroundType: "solid",
+    backgroundColor: "#ffffff",
+    gradientColor: "#eeeeee",
+    textColor: "#000000",
 
-    const result = await res.json();
-    // setGeneratedImage("http://localhost:8081" + result.imageUrl);
-    setGeneratedImage(API_BASE  + result.imageUrl);
-    setLoading(false);
+    name: {
+      color: "#000000",
+      fontSize: 42,
+      backgroundColor: "transparent",
+    },
+
+    role: {
+      color: "#ffffff",
+      fontSize: 20,
+      backgroundColor: "#ff5c5c",
+    },
+
+    skills: {
+      color: "#333333",
+    },
+  });
+
+  const generateCover = async (payload) => {
+    try {
+      setLoading(true);
+      setGeneratedImage("");
+
+      const res = await fetch("http://localhost:8081/api/covers/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Failed to generate cover");
+
+      const result = await res.json();
+      setGeneratedImage("http://localhost:8081" + result.imageUrl);
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="container">
-      {/*  HEADER ALWAYS VISIBLE */}
+    <div className="app-container">
+      {/* HEADER */}
       <div className="header">
         <h1>LinkedIn Cover Generator</h1>
         <p>Generate professional LinkedIn banners instantly</p>
       </div>
 
-      {/* MAIN CONTENT */}
-      <div className="main">
-        <CoverForm
-          selectedTemplate={selectedTemplate}
-          onTemplateChange={setSelectedTemplate}
-          onGenerate={generateCover}
-          loading={loading}
-        />
-
+      {/* MAIN */}
+      <div className="main-content">
         <CoverPreview
-          selectedTemplate={selectedTemplate}
           generatedImage={generatedImage}
+          loading={loading}
+          styleConfig={styleConfig}
+          setStyleConfig={setStyleConfig}
+          formData={form}
+        />
+        <CoverForm
+          form={form}
+          setForm={setForm}
+          styleConfig={styleConfig}
+          setStyleConfig={setStyleConfig}
+          onGenerate={generateCover}
           loading={loading}
         />
       </div>

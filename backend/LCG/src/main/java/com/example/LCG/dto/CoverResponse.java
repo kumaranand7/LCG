@@ -3,6 +3,7 @@ package com.example.LCG.dto;
 public class CoverResponse {
 
     private String imageUrl;
+
     public CoverResponse(String imageUrl) {
         this.imageUrl = imageUrl;
     }
