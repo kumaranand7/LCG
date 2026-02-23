@@ -5,7 +5,7 @@ Stand out. Get noticed. Get hired.
 
 🔗 Live Demo: https://lcg-blush.vercel.app/
 
----
+--- 
 
 ## ✨ Features
 
