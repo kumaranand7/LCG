@@ -1,7 +1,6 @@
 # 🚀 LinkedIn Cover Generator (LCG)
 
 Create stunning, professional LinkedIn cover banners in seconds.  
-Stand out. Get noticed. Get hired.
 
 🔗 Live Demo: https://lcg-blush.vercel.app/
 
