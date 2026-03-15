@@ -43,7 +43,7 @@ Create stunning, professional LinkedIn cover banners in seconds.
 3. Choose a Template
 4. Customize Colors
 5. Preview instantly
-6. Download your LinkedIn banner
+6. Download your LinkedIn Cover
 
 ---
 
