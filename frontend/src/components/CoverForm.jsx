@@ -32,6 +32,20 @@ export default function CoverForm({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!form.name.trim()) {
+    alert("Please enter your name");
+    return;
+    }
+
+     if (!form.role.trim()) {
+    alert("Please enter your role");
+    return;
+    }
+
+    if (skills.length === 0) {
+      alert("Please add at least one skill");
+      return;
+    }
     const updatedForm = {
       ...form,
       skills: skills.join(" | "),
