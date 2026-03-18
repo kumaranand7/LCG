@@ -2,6 +2,7 @@ import TemplateSelector from "./TemplateSelector";
 import SkillInput from "./SkillInput";
 import SkillTags from "./SkillTags";
 import { useSkills } from "../hooks/useSkills";
+import Swal from "sweetalert2";
 
 export default function CoverForm({
   form,
@@ -32,20 +33,49 @@ export default function CoverForm({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!form.name.trim()) {
-    alert("Please enter your name");
-    return;
-    }
+    // if (!form.name.trim()) {
+    // alert("Please enter your name");
+    // return;
+    // }
 
-     if (!form.role.trim()) {
-    alert("Please enter your role");
-    return;
-    }
+    //  if (!form.role.trim()) {
+    // alert("Please enter your role");
+    // return;
+    // }
 
-    if (skills.length === 0) {
-      alert("Please add at least one skill");
-      return;
-    }
+    // if (skills.length === 0) {
+    //   alert("Please add at least one skill");
+    //   return;
+    // }
+
+if (!form.name.trim()) {
+    Swal.fire({
+      icon: "warning",
+      title: "Name Required",
+      text: "Please enter your name",
+    });
+    return;
+  }
+
+if (!form.role.trim()) {
+  Swal.fire({
+    icon: "warning",
+    title: "Role Required",
+    text: "Please enter your role",
+  });
+  return;
+}
+
+if (skills.length === 0) {
+  Swal.fire({
+    icon: "warning",
+    title: "Skills Required",
+    text: "Please add at least one skill",
+  });
+  return;
+}
+
+
     const updatedForm = {
       ...form,
       skills: skills.join(" | "),
