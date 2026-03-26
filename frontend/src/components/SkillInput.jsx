@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export default function SkillInput({
   value,
   suggestions,
@@ -6,15 +8,33 @@ export default function SkillInput({
   onKeyDown,
   onSelect,
 }) {
+  useEffect(() => {
+    const activeItem = document.querySelector(".active-skill");
+    if (activeItem) {
+      activeItem.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [activeIndex]);
+
   return (
     <div style={{ position: "relative" }}>
+      {/* INPUT */}
       <input
         placeholder="Type a skill and press Enter"
         value={value}
         onChange={onChange}
         onKeyDown={onKeyDown}
+        style={{
+          width: "100%",
+          padding: "10px",
+          borderRadius: "6px",
+          border: "1px solid #ccc",
+          outline: "none",
+        }}
       />
 
+      {/* SUGGESTIONS */}
       {suggestions.length > 0 && (
         <ul
           style={{
@@ -29,16 +49,20 @@ export default function SkillInput({
             borderRadius: "6px",
             maxHeight: "150px",
             overflowY: "auto",
+            marginTop: "4px",
           }}
         >
           {suggestions.map((skill, index) => (
             <li
               key={skill}
               onClick={() => onSelect(skill)}
+              className={index === activeIndex ? "active-skill" : ""}
               style={{
                 padding: "8px",
                 cursor: "pointer",
-                background: index === activeIndex ? "#e6f7f8" : "white",
+                background:
+                  index === activeIndex ? "#e6f7f8" : "white",
+                borderRadius: "4px",
               }}
             >
               {skill}
