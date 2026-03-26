@@ -3,6 +3,7 @@ import SkillInput from "./SkillInput";
 import SkillTags from "./SkillTags";
 import { useSkills } from "../hooks/useSkills";
 import Swal from "sweetalert2";
+import { useEffect } from "react";
 
 export default function CoverForm({
   form,
@@ -12,15 +13,32 @@ export default function CoverForm({
   loading,
 }) {
   const {
-    skills,
-    skillInput,
-    suggestions,
-    activeIndex,
-    handleSkillChange,
-    handleKeyDown,
-    addSkill,
-    removeSkill,
-  } = useSkills([]);
+  skills,
+  skillInput,
+  suggestions,
+  activeIndex,
+  handleSkillChange,
+  handleKeyDown,
+  addSkill,
+  removeSkill,
+    } = useSkills([], (updatedSkills) => {
+      setForm((prev) => ({
+        ...prev,
+        skills: updatedSkills.join(" | "),
+      }));
+    });
+
+    useEffect(() => {
+      const combinedSkills = [
+        ...skills,
+        ...(skillInput ? [skillInput] : []),
+      ];
+
+      setForm((prev) => ({
+        ...prev,
+        skills: combinedSkills.join(" | "),
+      }));
+    }, [skillInput, skills, setForm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,58 +51,40 @@ export default function CoverForm({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // if (!form.name.trim()) {
-    // alert("Please enter your name");
-    // return;
-    // }
+    if (!form.name.trim()) {
+      Swal.fire({
+        icon: "warning",
+        title: "Name Required",
+        text: "Please enter your name",
+      });
+      return;
+    }
 
-    //  if (!form.role.trim()) {
-    // alert("Please enter your role");
-    // return;
-    // }
+    if (!form.role.trim()) {
+      Swal.fire({
+        icon: "warning",
+        title: "Role Required",
+        text: "Please enter your role",
+      });
+      return;
+    }
 
-    // if (skills.length === 0) {
-    //   alert("Please add at least one skill");
-    //   return;
-    // }
-
-if (!form.name.trim()) {
-    Swal.fire({
-      icon: "warning",
-      title: "Name Required",
-      text: "Please enter your name",
-    });
-    return;
-  }
-
-if (!form.role.trim()) {
-  Swal.fire({
-    icon: "warning",
-    title: "Role Required",
-    text: "Please enter your role",
-  });
-  return;
-}
-
-if (skills.length === 0) {
-  Swal.fire({
-    icon: "warning",
-    title: "Skills Required",
-    text: "Please add at least one skill",
-  });
-  return;
-}
-
+    if (skills.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Skills Required",
+        text: "Please add at least one skill",
+      });
+      return;
+    }
 
     const updatedForm = {
       ...form,
       skills: skills.join(" | "),
     };
 
-    // update parent form state (important)
     setForm(updatedForm);
 
-    // send to backend
     onGenerate({
       ...updatedForm,
       style: styleConfig,
@@ -92,9 +92,9 @@ if (skills.length === 0) {
   };
 
   return (
-    // <div className="controls-panel">
     <form className="section-card" onSubmit={handleSubmit}>
       <h2 className="section-title">Create Your Cover</h2>
+
       <input
         name="name"
         placeholder="Your Name"
@@ -121,7 +121,6 @@ if (skills.length === 0) {
       <SkillTags skills={skills} onRemove={removeSkill} />
 
       <TemplateSelector
-        className="tab-content"
         selected={form.templateId}
         onSelect={(id) =>
           setForm({ ...form, templateId: id })
@@ -132,6 +131,5 @@ if (skills.length === 0) {
         {loading ? "Generating..." : "Generate Cover"}
       </button>
     </form>
-    // </div>
   );
 }
