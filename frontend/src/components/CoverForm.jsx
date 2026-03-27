@@ -68,8 +68,12 @@ export default function CoverForm({
       });
       return;
     }
+    const finalSkills = [
+      ...skills,
+      ...(skillInput.trim() ? [skillInput.trim()] : []),
+    ];
 
-    if (skills.length === 0) {
+    if (finalSkills.length === 0) {
       Swal.fire({
         icon: "warning",
         title: "Skills Required",
@@ -80,7 +84,7 @@ export default function CoverForm({
 
     const updatedForm = {
       ...form,
-      skills: skills.join(" | "),
+      skills: finalSkills.join(" | "),
     };
 
     setForm(updatedForm);
