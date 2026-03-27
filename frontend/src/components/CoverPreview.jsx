@@ -15,11 +15,6 @@ export default function CoverPreview({
 
   if (loading) return <p>Generating cover...</p>;
 
-  // const overlayStyle = {
-  //   color: styleConfig.textColor,
-  //   textAlign: styleConfig.textAlign,
-  // };
-
 //functioin for file name
  const formatFileName = (text) => {
   return text
