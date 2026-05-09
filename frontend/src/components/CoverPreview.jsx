@@ -95,6 +95,10 @@ const handleDownload = async () => {
               padding: "6px 12px",
               borderRadius: "6px",
               display: "inline-block",
+              fontFamily: styleConfig.name.fontFamily,
+              padding: "6px 12px",
+              borderRadius: "6px",
+              display: "inline-block",
             }}
           >
             {formData.name || "Your Name"}
