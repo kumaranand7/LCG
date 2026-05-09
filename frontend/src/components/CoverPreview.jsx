@@ -94,7 +94,6 @@ const handleDownload = async () => {
               background: styleConfig.name.backgroundColor,
               padding: "6px 12px",
               borderRadius: "6px",
-              display: "inline-block",
               fontFamily: styleConfig.name.fontFamily,
               display: "inline-block",
             }}
