@@ -26,6 +26,7 @@ function App() {
       color: "#000000",
       fontSize: 42,
       backgroundColor: "transparent",
+      fontFamily: "'Dancing Script', cursive", 
     },
 
     role: {
