@@ -34,11 +34,9 @@ public class CoverImageService {
 
         // ================= NAME =================
         g.setColor(Color.decode(style.getName().getColor()));
-        g.setFont(new Font(
-                "SansSerif",
-                Font.BOLD,
-                style.getName().getFontSize()
-        ));
+
+        g.setFont(loadFont(style.getName().getFontFamily(), Font.BOLD, style.getName().getFontSize()));
+
         drawCenteredText(
                 g,
                 request.getName(),
@@ -102,11 +100,9 @@ public class CoverImageService {
             int y,
             StyleConfig.TextStyle roleStyle
     ) {
-        g.setFont(new Font(
-                "SansSerif",
-                Font.BOLD,
-                roleStyle.getFontSize()
-        ));
+
+        g.setFont(loadFont(roleStyle.getFontFamily(), Font.BOLD, roleStyle.getFontSize()));
+
         FontMetrics fm = g.getFontMetrics();
 
         int textWidth = fm.stringWidth(text);
@@ -127,5 +123,35 @@ public class CoverImageService {
         // Text
         g.setColor(Color.decode(roleStyle.getColor()));
         g.drawString(text, x, y);
+    }
+
+    private Font loadFont(String fontFamily, int style, int size) {
+        if (fontFamily == null || fontFamily.isBlank()) {
+            return new Font("SansSerif", style, size);
+        }
+
+        // Extract clean font name from CSS value like "'Dancing Script', cursive"
+        String cleaned = fontFamily
+                .replace("'", "")
+                .replace("\"", "")
+                .split(",")[0]
+                .trim();
+
+        try {
+            // Try to load from resources/fonts folder
+            String fontPath = "fonts/" + cleaned.replace(" ", "") + ".ttf";
+            java.io.InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream(fontPath);
+
+            if (is != null) {
+                Font loaded = Font.createFont(Font.TRUETYPE_FONT, is);
+                return loaded.deriveFont(style, size);
+            }
+        } catch (Exception e) {
+            System.out.println("Font not found: " + cleaned + ", falling back to SansSerif");
+        }
+
+        return new Font("SansSerif", style, size);
     }
 }

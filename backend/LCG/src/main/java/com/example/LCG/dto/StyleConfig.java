@@ -47,6 +47,7 @@ public class StyleConfig {
         private String color;
         private int fontSize;
         private String backgroundColor;
+        private String fontFamily;
 
         public String getColor() {
             return color;
@@ -71,6 +72,14 @@ public class StyleConfig {
         public void setBackgroundColor(String backgroundColor) {
             this.backgroundColor = backgroundColor;
         }
+
+        public String getFontFamily() { 
+            return fontFamily; 
+            }
+
+        public void setFontFamily(String fontFamily) { 
+            this.fontFamily = fontFamily; 
+            }
     }
 
     public static class SkillsStyle {
