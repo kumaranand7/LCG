@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { SKILLS } from "../data/skillsData";
 
-export function useSkills(initialSkills = []) {
+export function useSkills(initialSkills = [], onSkillsChange) {
   const [skills, setSkills] = useState(initialSkills);
   const [skillInput, setSkillInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(-1);
+
+  const updateSkills = (newSkills) => {
+    setSkills(newSkills);
+
+    if (onSkillsChange) {
+      onSkillsChange(newSkills);
+    }
+  };
 
   const handleSkillChange = (e) => {
     const value = e.target.value;
@@ -26,15 +34,20 @@ export function useSkills(initialSkills = []) {
   };
 
   const addSkill = (skill) => {
-    if (skills.includes(skill)) return;
-    setSkills([...skills, skill]);
+    if (!skill || skills.includes(skill)) return;
+
+    const updated = [...skills, skill];
+
+    updateSkills(updated);
     setSkillInput("");
     setSuggestions([]);
     setActiveIndex(-1);
   };
 
   const removeSkill = (skillToRemove) => {
-    setSkills(skills.filter((s) => s !== skillToRemove));
+    const updated = skills.filter((s) => s !== skillToRemove);
+
+    updateSkills(updated);
   };
 
   const handleKeyDown = (e) => {
@@ -73,5 +86,6 @@ export function useSkills(initialSkills = []) {
     handleKeyDown,
     addSkill,
     removeSkill,
+    setSkills,
   };
 }

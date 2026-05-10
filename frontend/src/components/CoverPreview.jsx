@@ -1,5 +1,6 @@
 import { TEMPLATES } from "../data/templates";
 import StyleControls from "./StyleControls";
+import Swal from "sweetalert2";
 
 export default function CoverPreview({
   generatedImage,
@@ -14,10 +15,20 @@ export default function CoverPreview({
 
   if (loading) return <p>Generating cover...</p>;
 
-  // const overlayStyle = {
-  //   color: styleConfig.textColor,
-  //   textAlign: styleConfig.textAlign,
-  // };
+//functioin for file name
+ const formatFileName = (text) => {
+  return text
+    ?.trim()
+    .split(" ") 
+    .filter(Boolean)
+    .map(
+      (word) =>
+        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    )
+    .join("_") 
+    .replace(/[^A-Za-z0-9_]/g, ""); 
+  };
+
 
   const backgroundStyle =
   styleConfig.backgroundType === "gradient"
@@ -29,18 +40,39 @@ export default function CoverPreview({
       };
 
 
-  const handleDownload = async () => {
+const handleDownload = async () => {
+  try {
     const res = await fetch(generatedImage);
     const blob = await res.blob();
 
     const url = window.URL.createObjectURL(blob);
+
+    const name = formatFileName(formData.name) || "User";
+
     const a = document.createElement("a");
     a.href = url;
-    a.download = "linkedin-cover.png";
+    a.download = `${name}_Cover.png`;
     a.click();
 
     window.URL.revokeObjectURL(url);
-  };
+
+    //  SweetAlert success
+    Swal.fire({
+      icon: "success",
+      title: "Cover Downloaded!",
+      text: "Your file has been downloaded successfully",
+      timer: 2000,
+      confirmButtonColor: "#2563eb",
+    });
+
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Download Failed",
+      text: "Something went wrong. Please try again.",
+    });
+  }
+};
 
   return (
     <div className="preview-panel">
@@ -62,6 +94,7 @@ export default function CoverPreview({
               background: styleConfig.name.backgroundColor,
               padding: "6px 12px",
               borderRadius: "6px",
+              fontFamily: styleConfig.name.fontFamily,
               display: "inline-block",
             }}
           >

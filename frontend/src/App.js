@@ -1,11 +1,13 @@
 import { useState } from "react";
 import CoverForm from "./components/CoverForm";
 import CoverPreview from "./components/CoverPreview";
+import SummaryInput from "./components/SummaryInput";
 import "./App.css";
 
 function App() {
   const [generatedImage, setGeneratedImage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiSkills, setAiSkills] = useState([]);
 
   const [form, setForm] = useState({
     name: "",
@@ -26,6 +28,7 @@ function App() {
       color: "#000000",
       fontSize: 42,
       backgroundColor: "transparent",
+      fontFamily: "'Dancing Script', cursive", 
     },
 
     role: {
@@ -38,6 +41,38 @@ function App() {
       color: "#333333",
     },
   });
+
+  const extractFromSummary = async (summary) => {
+    const API_BASE = process.env.REACT_APP_API_BASE; 
+  const res = await fetch(`${API_BASE}/api/ai/extract`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ summary }),
+  });
+  const data = await res.json();
+
+  // Auto-fill the form
+  setForm(prev => ({
+    ...prev,
+    name: data.name,
+    role: data.role,
+    skills: data.skills,
+  }));
+
+  // ADD SKILLS 
+  if (data.skills) {
+    setAiSkills(data.skills.split(" | ").map(s => s.trim()));
+  }
+
+  // Auto-generate cover
+  generateCover({
+    name: data.name,
+    role: data.role,
+    skills: data.skills,
+    templateId: form.templateId,
+    style: styleConfig,
+  });
+};
 
   const generateCover = async (payload) => {
     try {
@@ -72,6 +107,7 @@ function App() {
       <div className="header">
         <h1>LinkedIn Cover Generator</h1>
         <p>Generate professional LinkedIn banners instantly</p>
+                <SummaryInput onExtract={extractFromSummary} loading={loading} />
       </div>
 
       {/* MAIN */}
@@ -83,6 +119,7 @@ function App() {
           setStyleConfig={setStyleConfig}
           formData={form}
         />
+        {/* <SummaryInput onExtract={extractFromSummary} loading={loading} /> */}
         <CoverForm
           form={form}
           setForm={setForm}
@@ -90,6 +127,8 @@ function App() {
           setStyleConfig={setStyleConfig}
           onGenerate={generateCover}
           loading={loading}
+          aiSkills={aiSkills}
+          setAiSkills={setAiSkills}
         />
       </div>
     </div>
