@@ -86,5 +86,6 @@ export function useSkills(initialSkills = [], onSkillsChange) {
     handleKeyDown,
     addSkill,
     removeSkill,
+    setSkills,
   };
 }
