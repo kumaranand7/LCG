@@ -11,12 +11,15 @@ export default function CoverForm({
   styleConfig,
   onGenerate,
   loading,
+  aiSkills, 
+  setAiSkills 
 }) {
   const {
   skills,
   skillInput,
   suggestions,
   activeIndex,
+  setSkills,
   handleSkillChange,
   handleKeyDown,
   addSkill,
@@ -27,7 +30,13 @@ export default function CoverForm({
         skills: updatedSkills.join(" | "),
       }));
     });
-
+    useEffect(() => {
+      if (aiSkills && aiSkills.length > 0) {
+        setSkills(aiSkills);
+        setAiSkills([]);
+      }
+    }, [aiSkills, setSkills, setAiSkills]);  
+    
     useEffect(() => {
       const combinedSkills = [
         ...skills,
